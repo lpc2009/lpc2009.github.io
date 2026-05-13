@@ -1,0 +1,60 @@
+body {
+    font-family: "Helvetica", "Lucida Grande", sans-serif;
+    /* cor das letras */
+    color: #000000;
+
+    /* espaçamentos */
+    width: 940px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.titulo {
+    background-color: #e1edf2;
+    /* espaçamento interno */
+    padding: 10px;
+    font-size: 32px;
+}
+
+.subtitulo {
+    border-bottom: 2px solid rgb(146, 212, 255);
+}
+
+figure {
+    margin: 30px;
+    padding: 15px;
+
+    text-align: center;
+    background-color: rgb(161, 222, 250);
+    border: 1px solid lightgray;
+}
+
+img {
+    width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figure img {
+    /* ocupa 100% da largura do elemento
+    pai */
+    width: 100%;
+}
+.matriz-empresa {
+    width: 550px;
+    margin-left: auto;
+    margin-right: auto
+}
+.fundadores {
+    width: 275px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.contato__subtitulo
+{
+    display: inline;
+}
+.contato__info{
+    margin: 16px 0 24px;
+    padding-left: 32px;
+}
