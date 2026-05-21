@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pixel Forge – Forje seu Futuro em Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Syne:wght@400;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ─── RESET & VARIABLES ─────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:        #08090d;
+      --surface:   #0f1118;
+      --card:      #13161f;
+      --border:    #1e2230;
+      --neon:      #00ffe5;
+      --fire:      #ff4d00;
+      --amber:     #ffc300;
+      --text:      #e8eaf2;
+      --muted:     #6b7191;
+      --font-pixel: 'Press Start 2P', monospace;
+      --font-head:  'Syne', sans-serif;
+      --font-mono:  'Space Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-head);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CUSTOM CURSOR ─────────────────────────────────────── */
+    #cursor {
+      width: 12px; height: 12px;
+      background: var(--neon);
+      border-radius: 0; /* pixel square */
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: background .15s;
+      image-rendering: pixelated;
+    }
+    #cursor-ring {
+      width: 32px; height: 32px;
+      border: 2px solid var(--neon);
+      border-radius: 0;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform .12s ease, border-color .15s;
+      opacity: .5;
+    }
+
+    /* ─── SCANLINE OVERLAY ──────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,.08) 3px,
+        rgba(0,0,0,.08) 4px
+      );
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4vw;
+      background: rgba(8,9,13,.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--font-pixel);
+      font-size: .7rem;
+      color: var(--neon);
+      text-shadow: 0 0 12px var(--neon);
+      letter-spacing: .05em;
+      text-decoration: none;
+    }
+    .logo span { color: var(--fire); text-shadow: 0 0 12px var(--fire); }
+
+    nav ul {
+      list-style: none;
+      display: flex; gap: 2rem;
+    }
+    nav ul a {
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      transition: color .2s;
+      position: relative;
+    }
+    nav ul a::after {
+      content: '';
+      position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--neon);
+      transition: width .25s;
+    }
+    nav ul a:hover { color: var(--neon); }
+    nav ul a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-family: var(--font-mono);
+      font-size: .7rem;
+      background: var(--fire);
+      color: #fff;
+      padding: .55rem 1.2rem;
+      border: none;
+      cursor: none;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      clip-path: polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+      transition: background .2s, box-shadow .2s;
+      text-decoration: none;
+    }
+    .nav-cta:hover {
+      background: var(--amber);
+      box-shadow: 0 0 20px rgba(255,77,0,.6);
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 0 4vw;
+      padding-top: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Grid background */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: .4;
+      animation: gridPulse 8s ease-in-out infinite;
+    }
+    @keyframes gridPulse {
+      0%,100% { opacity:.4; } 50% { opacity:.25; }
+    }
+
+    /* Glow blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+    }
+    .blob-1 {
+      width: 500px; height: 500px;
+      background: rgba(0,255,229,.07);
+      top: -100px; right: -100px;
+      animation: drift1 14s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 400px; height: 400px;
+      background: rgba(255,77,0,.08);
+      bottom: -80px; left: 20%;
+      animation: drift2 18s ease-in-out infinite;
+    }
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-40px,40px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(60px,-30px)} }
+
+    .hero-tag {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--neon);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp .6s .2s forwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(1.2rem, 4vw, 2.8rem);
+      line-height: 1.6;
+      max-width: 14ch;
+      text-shadow: 0 0 30px rgba(0,255,229,.15);
+      opacity: 0;
+      animation: fadeUp .7s .4s forwards;
+    }
+    .hero-title .accent { color: var(--fire); text-shadow: 0 0 20px var(--fire); }
+    .hero-title .accent2 { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
+
+    .hero-sub {
+      margin-top: 1.8rem;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 46ch;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp .7s .6s forwards;
+    }
+
+    .hero-btns {
+      margin-top: 2.5rem;
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .7s .8s forwards;
+    }
+
+    .btn-primary {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      background: var(--neon);
+      color: var(--bg);
+      padding: .85rem 2rem;
+      border: none; cursor: none;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      clip-path: polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 0 32px rgba(0,255,229,.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      font-family: var(--font-mono);
+      font-size: .8rem;
+      background: transparent;
+      color: var(--text);
+      padding: .85rem 2rem;
+      border: 1px solid var(--border);
+      cursor: none;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      clip-path: polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-secondary:hover {
+      border-color: var(--neon);
+      color: var(--neon);
+      box-shadow: 0 0 20px rgba(0,255,229,.15);
+    }
+
+    /* Floating pixel art deco */
+    .pixel-deco {
+      position: absolute;
+      right: 8vw; top: 50%;
+      transform: translateY(-50%);
+      width: 300px; height: 300px;
+      opacity: .7;
+      animation: floatDeco 6s ease-in-out infinite;
+    }
+    @keyframes floatDeco {
+      0%,100%{transform:translateY(-50%) translateX(0)} 50%{transform:translateY(calc(-50% - 18px)) translateX(6px)}
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 4vw;
+      display: flex; align-items: center; gap: .8rem;
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      opacity: 0;
+      animation: fadeUp .6s 1.2s forwards;
+    }
+    .scroll-hint::before {
+      content: '';
+      width: 40px; height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── STATS STRIP ───────────────────────────────────────── */
+    #stats {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-around; flex-wrap: wrap;
+      gap: 2rem;
+      padding: 2.5rem 4vw;
+    }
+    .stat {
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .6s, transform .6s;
+    }
+    .stat.visible { opacity: 1; transform: none; }
+    .stat-num {
+      font-family: var(--font-pixel);
+      font-size: clamp(1rem, 3vw, 1.8rem);
+      color: var(--neon);
+      text-shadow: 0 0 16px var(--neon);
+    }
+    .stat-label {
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      margin-top: .5rem;
+    }
+
+    /* ─── SECTION SHARED ────────────────────────────────────── */
+    section { padding: 7rem 4vw; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      color: var(--fire);
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      margin-bottom: .8rem;
+    }
+    .section-title {
+      font-family: var(--font-pixel);
+      font-size: clamp(.9rem, 2.5vw, 1.6rem);
+      line-height: 1.7;
+      max-width: 22ch;
+      margin-bottom: 1rem;
+    }
+    .section-sub {
+      color: var(--muted);
+      font-size: .95rem;
+      max-width: 50ch;
+      line-height: 1.7;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ─── CURSOS ────────────────────────────────────────────── */
+    #courses { background: var(--bg); }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0;
+      overflow: hidden;
+      clip-path: polygon(12px 0%,100% 0%,100% calc(100% - 12px),calc(100% - 12px) 100%,0% 100%,0% 12px);
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .course-card.visible {
+      opacity: 1; transform: none;
+    }
+    .course-card:hover {
+      border-color: var(--neon);
+      box-shadow: 0 0 30px rgba(0,255,229,.1);
+      transform: translateY(-6px);
+    }
+
+    .card-banner {
+      height: 8px;
+    }
+    .card-banner.cyan  { background: linear-gradient(90deg, var(--neon), #0077ff); }
+    .card-banner.fire  { background: linear-gradient(90deg, var(--fire), var(--amber)); }
+    .card-banner.violet{ background: linear-gradient(90deg, #9b59b6, #ff6fd8); }
+
+    .card-body { padding: 1.8rem; }
+
+    .card-tag {
+      font-family: var(--font-mono);
+      font-size: .55rem;
+      text-transform: uppercase;
+      letter-spacing: .2em;
+      padding: .25rem .6rem;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-family: var(--font-pixel);
+      font-size: .7rem;
+      line-height: 1.9;
+      margin-bottom: .8rem;
+    }
+    .card-desc {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-meta {
+      display: flex; gap: 1.2rem;
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 1.5rem;
+    }
+    .card-meta span { display: flex; align-items: center; gap: .3rem; }
+
+    .card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1.2rem;
+    }
+    .card-price {
+      font-family: var(--font-pixel);
+      font-size: .8rem;
+      color: var(--amber);
+    }
+    .card-btn {
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      background: transparent;
+      color: var(--neon);
+      border: 1px solid var(--neon);
+      padding: .45rem 1rem;
+      cursor: none;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      transition: background .2s, color .2s;
+    }
+    .card-btn:hover { background: var(--neon); color: var(--bg); }
+
+    /* ─── ABOUT / ENGINE ────────────────────────────────────── */
+    #about {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    @media(max-width:768px) { #about { grid-template-columns: 1fr; gap: 3rem; } }
+
+    .about-visual {
+      position: relative;
+    }
+    .terminal {
+      background: #090b10;
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: .72rem;
+      line-height: 1.8;
+      padding: 1.5rem;
+      clip-path: polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+      position: relative;
+      overflow: hidden;
+    }
+    .terminal::before {
+      content: '● ● ●';
+      position: absolute; top: .8rem; left: 1rem;
+      font-size: .6rem;
+      color: var(--border);
+      letter-spacing: .5rem;
+    }
+    .terminal-lines { margin-top: 1.5rem; }
+    .tl { color: var(--muted); }
+    .tl .cmd  { color: var(--neon); }
+    .tl .str  { color: var(--amber); }
+    .tl .fn   { color: #ff6fd8; }
+    .tl .num  { color: var(--fire); }
+    .tl .comment { color: #3a3f55; }
+    .cursor-blink {
+      display: inline-block; width: 8px; height: .85em;
+      background: var(--neon); vertical-align: middle;
+      animation: blink .8s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .about-features { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2rem; }
+    .feat {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      opacity: 0; transform: translateX(20px);
+      transition: opacity .5s, transform .5s;
+    }
+    .feat.visible { opacity: 1; transform: none; }
+    .feat-icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      clip-path: polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+    }
+    .feat-text h4 { font-family: var(--font-pixel); font-size: .55rem; line-height: 1.8; margin-bottom: .3rem; }
+    .feat-text p  { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── TRILHA ────────────────────────────────────────────── */
+    #track { background: var(--bg); }
+    .track-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+    .track-step {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      position: relative;
+      clip-path: polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);
+      background: var(--card);
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .5s, transform .5s;
+    }
+    .track-step.visible { opacity: 1; transform: none; }
+    .track-step:hover { border-color: var(--fire); }
+    .step-num {
+      font-family: var(--font-pixel);
+      font-size: .6rem;
+      color: var(--fire);
+      margin-bottom: .8rem;
+    }
+    .step-title {
+      font-family: var(--font-pixel);
+      font-size: .55rem;
+      line-height: 1.9;
+      margin-bottom: .6rem;
+    }
+    .step-desc { font-size: .8rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────── */
+    #testimonials {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .testi-track {
+      display: flex; gap: 1.5rem;
+      animation: marquee 30s linear infinite;
+      width: max-content;
+    }
+    .testi-track:hover { animation-play-state: paused; }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .testi-card {
+      width: 320px; flex-shrink: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      clip-path: polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);
+    }
+    .testi-stars { color: var(--amber); font-size: .8rem; margin-bottom: .8rem; }
+    .testi-text { font-size: .85rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.2rem; }
+    .testi-author {
+      display: flex; align-items: center; gap: .8rem;
+      font-family: var(--font-mono); font-size: .6rem; color: var(--text);
+      text-transform: uppercase; letter-spacing: .1em;
+    }
+    .testi-avatar {
+      width: 32px; height: 32px;
+      background: var(--border);
+      clip-path: polygon(4px 0%,100% 0%,100% calc(100% - 4px),calc(100% - 4px) 100%,0% 100%,0% 4px);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem;
+    }
+
+    /* ─── CTA FINAL ─────────────────────────────────────────── */
+    #cta {
+      background: var(--bg);
+      text-align: center;
+      border-top: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    #cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 100%, rgba(0,255,229,.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    #cta .section-title { margin: 0 auto 1rem; text-align: center; }
+    #cta .section-sub   { margin: 0 auto 2.5rem; text-align: center; }
+    #cta .hero-btns     { justify-content: center; opacity: 1; animation: none; }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 3rem 4vw 2rem;
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      gap: 2rem;
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      color: var(--muted);
+    }
+    footer .logo { font-size: .55rem; }
+    footer p { margin-top: .5rem; max-width: 28ch; line-height: 1.7; }
+    .footer-links { display: flex; flex-direction: column; gap: .6rem; }
+    .footer-links a {
+      color: var(--muted); text-decoration: none;
+      text-transform: uppercase; letter-spacing: .12em;
+      transition: color .2s;
+    }
+    .footer-links a:hover { color: var(--neon); }
+    .footer-bottom {
+      width: 100%;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: #2a2f42;
+      letter-spacing: .1em;
+    }
+
+    /* ─── ANIMATIONS ────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">PIXEL<span>FORGE</span></a>
+  <ul>
+    <li><a href="#courses">Cursos</a></li>
+    <li><a href="#about">Sobre</a></li>
+    <li><a href="#track">Trilha</a></li>
+    <li><a href="#testimonials">Alunos</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Começar Agora</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <p class="hero-tag">// Escola de Desenvolvimento de Games</p>
+  <h1 class="hero-title">
+    FORJE<br>
+    <span class="accent">GAMES</span><br>
+    <span class="accent2">ÉPICOS.</span>
+  </h1>
+  <p class="hero-sub">
+    Da lógica ao lançamento — aprenda a criar jogos do zero com a metodologia hands-on da Pixel Forge. Sem enrolação, só código e criatividade.
+  </p>
+  <div class="hero-btns">
+    <a href="#courses" class="btn-primary">Ver Cursos</a>
+    <a href="#track" class="btn-secondary">Ver Trilha</a>
+  </div>
+
+  <!-- Pixel art controller SVG -->
+  <svg class="pixel-deco" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Controller body -->
+    <rect x="20" y="70" width="160" height="80" rx="0" fill="#13161f" stroke="#1e2230" stroke-width="2"/>
+    <rect x="10" y="90" width="30" height="40" rx="0" fill="#13161f" stroke="#1e2230" stroke-width="2"/>
+    <rect x="160" y="90" width="30" height="40" rx="0" fill="#13161f" stroke="#1e2230" stroke-width="2"/>
+    <!-- D-pad -->
+    <rect x="35" y="96" width="12" height="36" fill="#00ffe5" opacity=".8"/>
+    <rect x="25" y="106" width="32" height="16" fill="#00ffe5" opacity=".8"/>
+    <!-- Buttons -->
+    <rect x="138" y="90" width="12" height="12" fill="#ff4d00"/>
+    <rect x="154" y="90" width="12" height="12" fill="#ffc300"/>
+    <rect x="138" y="106" width="12" height="12" fill="#ffc300"/>
+    <rect x="154" y="106" width="12" height="12" fill="#00ffe5"/>
+    <!-- Analog sticks -->
+    <rect x="70" y="100" width="20" height="20" fill="#1e2230"/>
+    <rect x="76" y="106" width="8" height="8" fill="#00ffe5" opacity=".5"/>
+    <rect x="110" y="100" width="20" height="20" fill="#1e2230"/>
+    <rect x="116" y="106" width="8" height="8" fill="#ff4d00" opacity=".5"/>
+    <!-- Start/select -->
+    <rect x="88" y="118" width="10" height="6" fill="#1e2230"/>
+    <rect x="102" y="118" width="10" height="6" fill="#1e2230"/>
+    <!-- Scanlines on controller -->
+    <rect x="20" y="74" width="160" height="2" fill="#fff" opacity=".03"/>
+    <rect x="20" y="80" width="160" height="2" fill="#fff" opacity=".03"/>
+    <rect x="20" y="86" width="160" height="2" fill="#fff" opacity=".03"/>
+  </svg>
+
+  <div class="scroll-hint">Scroll para explorar</div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stat"><div class="stat-num" data-target="4800">0</div><div class="stat-label">Alunos Formados</div></div>
+  <div class="stat"><div class="stat-num" data-target="120">0</div><div class="stat-label">Horas de Conteúdo</div></div>
+  <div class="stat"><div class="stat-num" data-target="98">0</div><div class="stat-label">% de Satisfação</div></div>
+  <div class="stat"><div class="stat-num" data-target="34">0</div><div class="stat-label">Games Publicados</div></div>
+</div>
+
+<!-- COURSES -->
+<section id="courses">
+  <p class="section-label">&gt; load courses.exe</p>
+  <h2 class="section-title">ESCOLHA SUA JORNADA</h2>
+  <p class="section-sub">Cursos pensados para todos os níveis — do iniciante que nunca escreveu uma linha de código ao dev que quer escalar seu primeiro studio.</p>
+
+  <div class="courses-grid">
+    <div class="course-card">
+      <div class="card-banner cyan"></div>
+      <div class="card-body">
+        <span class="card-tag">Iniciante</span>
+        <h3 class="card-title">Fundamentos de Game Dev</h3>
+        <p class="card-desc">Lógica de programação, loops de jogo, física básica e criação do seu primeiro platformer 2D do zero.</p>
+        <div class="card-meta">
+          <span>⏱ 40h</span>
+          <span>🎮 Unity</span>
+          <span>★ 4.9</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 197</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="card-banner fire"></div>
+      <div class="card-body">
+        <span class="card-tag">Intermediário</span>
+        <h3 class="card-title">RPG Systems & Inventory</h3>
+        <p class="card-desc">Construa sistemas de RPG completos: inventário, batalha por turnos, diálogo e salvamento de estado.</p>
+        <div class="card-meta">
+          <span>⏱ 55h</span>
+          <span>🎮 Unity + C#</span>
+          <span>★ 4.8</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 297</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="card-banner violet"></div>
+      <div class="card-body">
+        <span class="card-tag">Avançado</span>
+        <h3 class="card-title">Shaders & Visual FX</h3>
+        <p class="card-desc">Domine HLSL e ShaderGraph para criar efeitos visuais cinematográficos, partículas e pós-processamento.</p>
+        <div class="card-meta">
+          <span>⏱ 35h</span>
+          <span>🎮 Unity URP</span>
+          <span>★ 5.0</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 347</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="card-banner fire"></div>
+      <div class="card-body">
+        <span class="card-tag">Intermediário</span>
+        <h3 class="card-title">Inteligência Artificial em Games</h3>
+        <p class="card-desc">Pathfinding, behavior trees, máquinas de estado — crie NPCs que realmente parecem vivos.</p>
+        <div class="card-meta">
+          <span>⏱ 42h</span>
+          <span>🎮 Unity + C#</span>
+          <span>★ 4.7</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 247</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="card-banner cyan"></div>
+      <div class="card-body">
+        <span class="card-tag">All Levels</span>
+        <h3 class="card-title">Godot do Zero ao Deploy</h3>
+        <p class="card-desc">Crie, polir e publicar um jogo completo com Godot 4 e GDScript. Exportação para PC, Web e Mobile.</p>
+        <div class="card-meta">
+          <span>⏱ 60h</span>
+          <span>🎮 Godot 4</span>
+          <span>★ 4.9</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 277</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="course-card">
+      <div class="card-banner violet"></div>
+      <div class="card-body">
+        <span class="card-tag">Bootcamp</span>
+        <h3 class="card-title">Game Studio — Bootcamp</h3>
+        <p class="card-desc">8 semanas intensivas para ir de ideia ao lançamento na Steam, com mentoria ao vivo toda semana.</p>
+        <div class="card-meta">
+          <span>⏱ 8 semanas</span>
+          <span>🎮 Multi-engine</span>
+          <span>★ 5.0</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-price">R$ 897</span>
+          <button class="card-btn">Acessar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-visual">
+    <div class="terminal">
+      <div class="terminal-lines">
+        <div class="tl"><span class="comment">// pixel_forge_engine.cs</span></div>
+        <div class="tl">&nbsp;</div>
+        <div class="tl"><span class="fn">public class</span> <span class="cmd">PixelForge</span> {</div>
+        <div class="tl">&nbsp;&nbsp;<span class="fn">string</span> missao = <span class="str">"Democratizar game dev"</span>;</div>
+        <div class="tl">&nbsp;&nbsp;<span class="fn">int</span> alunos = <span class="num">4800</span>;</div>
+        <div class="tl">&nbsp;&nbsp;<span class="fn">bool</span> pratico = <span class="cmd">true</span>;</div>
+        <div class="tl">&nbsp;</div>
+        <div class="tl">&nbsp;&nbsp;<span class="fn">void</span> <span class="cmd">Start</span>() {</div>
+        <div class="tl">&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmd">Debug</span>.<span class="fn">Log</span>(<span class="str">"Bem-vindo!"</span>);</div>
+        <div class="tl">&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">foreach</span>(aluno) {</div>
+        <div class="tl">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aluno.<span class="cmd">LançarGame</span>();</div>
+        <div class="tl">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+        <div class="tl">&nbsp;&nbsp;}</div>
+        <div class="tl">}</div>
+        <div class="tl">&nbsp;</div>
+        <div class="tl"><span class="cmd">></span> compilando... <span class="cursor-blink"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="section-label">&gt; about.exe</p>
+    <h2 class="section-title">POR QUE A PIXEL FORGE?</h2>
+    <p class="section-sub">Nós não ensinamos teoria em slides — cada aula termina com um projeto rodando na sua máquina.</p>
+
+    <div class="about-features">
+      <div class="feat">
+        <div class="feat-icon">🛠</div>
+        <div class="feat-text">
+          <h4>APRENDIZADO HANDS-ON</h4>
+          <p>100% dos módulos incluem projetos práticos. Você sai de cada aula com algo funcionando.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-text">
+          <h4>MENTORES DE MERCADO</h4>
+          <p>Nossos instrutores têm games publicados em Steam, itch.io e App Store. Teoria embasada em experiência real.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-text">
+          <h4>COMUNIDADE ATIVA</h4>
+          <p>Discord com mais de 4 mil devs. Game Jams mensais, code reviews e networking genuíno.</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon">🏆</div>
+        <div class="feat-text">
+          <h4>DO ZERO AO DEPLOY</h4>
+          <p>Você aprende a criar, otimizar e publicar. Saída completa, não um tutorial pela metade.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACK -->
+<section id="track">
+  <p class="section-label">&gt; load roadmap.json</p>
+  <h2 class="section-title">TRILHA DO GAME DEV</h2>
+  <p class="section-sub">Um caminho claro do iniciante ao profissional. Cada passo foi projetado para garantir evolução real.</p>
+
+  <div class="track-grid">
+    <div class="track-step">
+      <div class="step-num">01</div>
+      <h3 class="step-title">LÓGICA & ALGORITMOS</h3>
+      <p class="step-desc">Variáveis, condições, loops e funções. A fundação de todo código de jogo.</p>
+    </div>
+    <div class="track-step">
+      <div class="step-num">02</div>
+      <h3 class="step-title">PRIMEIRO GAME 2D</h3>
+      <p class="step-desc">Sprites, física, colisões e câmera. Seu primeiro jogo jogável em 2 semanas.</p>
+    </div>
+    <div class="track-step">
+      <div class="step-num">03</div>
+      <h3 class="step-title">SISTEMAS DE JOGO</h3>
+      <p class="step-desc">Inventário, progressão, saves e menus. Jogos com profundidade real.</p>
+    </div>
+    <div class="track-step">
+      <div class="step-num">04</div>
+      <h3 class="step-title">ARTE & ÁUDIO</h3>
+      <p class="step-desc">Pixel art, animação por ossos e design de som para game devs solo.</p>
+    </div>
+    <div class="track-step">
+      <div class="step-num">05</div>
+      <h3 class="step-title">OTIMIZAÇÃO</h3>
+      <p class="step-desc">Profiling, batching e gerenciamento de memória para 60fps estáveis.</p>
+    </div>
+    <div class="track-step">
+      <div class="step-num">06</div>
+      <h3 class="step-title">PUBLICAÇÃO</h3>
+      <p class="step-desc">Página na Steam, devlog, marketing e como precificar seu jogo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <p class="section-label">&gt; load reviews.db</p>
+  <h2 class="section-title" style="margin-bottom:3rem">O QUE OS ALUNOS DIZEM</h2>
+
+  <div style="overflow:hidden; margin: 0 -4vw;">
+    <div class="testi-track" id="testiTrack">
+      <!-- Original set -->
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Em 3 meses eu criei meu primeiro jogo completo e postei na itch.io. Nunca achei que ia conseguir tão rápido."</p>
+        <div class="testi-author"><div class="testi-avatar">👾</div>Lucas M. — SP</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O curso de shaders mudou completamente a forma como eu vejo gráficos. Os efeitos que eu consigo fazer agora parecem AAA."</p>
+        <div class="testi-author"><div class="testi-avatar">🎮</div>Beatriz K. — RJ</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★☆</div>
+        <p class="testi-text">"Já tentei outros cursos mas sempre ficava travado. Aqui a metodologia prática fez tudo clicar. Recomendo demais."</p>
+        <div class="testi-author"><div class="testi-avatar">🕹</div>Rodrigo A. — MG</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O bootcamp foi intenso mas valeu cada segundo. Lancei meu game na Steam no último dia do programa."</p>
+        <div class="testi-author"><div class="testi-avatar">🔥</div>Ana C. — RS</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"A comunidade do Discord sozinha já vale a assinatura. Aprendi mais conversando com os outros alunos do que em faculdade."</p>
+        <div class="testi-author"><div class="testi-avatar">⚡</div>Felipe T. — CE</div>
+      </div>
+      <!-- Duplicate for infinite loop -->
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"Em 3 meses eu criei meu primeiro jogo completo e postei na itch.io. Nunca achei que ia conseguir tão rápido."</p>
+        <div class="testi-author"><div class="testi-avatar">👾</div>Lucas M. — SP</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O curso de shaders mudou completamente a forma como eu vejo gráficos. Os efeitos que eu consigo fazer agora parecem AAA."</p>
+        <div class="testi-author"><div class="testi-avatar">🎮</div>Beatriz K. — RJ</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★☆</div>
+        <p class="testi-text">"Já tentei outros cursos mas sempre ficava travado. Aqui a metodologia prática fez tudo clicar. Recomendo demais."</p>
+        <div class="testi-author"><div class="testi-avatar">🕹</div>Rodrigo A. — MG</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"O bootcamp foi intenso mas valeu cada segundo. Lancei meu game na Steam no último dia do programa."</p>
+        <div class="testi-author"><div class="testi-avatar">🔥</div>Ana C. — RS</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text">"A comunidade do Discord sozinha já vale a assinatura. Aprendi mais conversando com os outros alunos do que em faculdade."</p>
+        <div class="testi-author"><div class="testi-avatar">⚡</div>Felipe T. — CE</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <p class="section-label">&gt; init career.exe</p>
+  <h2 class="section-title">PRONTO PARA<br>FORJAR SEU GAME?</h2>
+  <p class="section-sub">Junte-se a milhares de devs que transformaram sua paixão em projetos reais. Primeira semana grátis, sem cartão.</p>
+  <div class="hero-btns">
+    <a href="#courses" class="btn-primary">Começar Grátis</a>
+    <a href="#courses" class="btn-secondary">Ver Cursos</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <a href="#" class="logo">PIXEL<span>FORGE</span></a>
+    <p>Forjando game devs desde 2020. Educação prática para quem quer criar jogos de verdade.</p>
+  </div>
+  <div>
+    <p style="margin-bottom:.8rem; color: var(--text); text-transform:uppercase; letter-spacing:.15em; font-size:.6rem;">Cursos</p>
+    <div class="footer-links">
+      <a href="#">Fundamentos</a>
+      <a href="#">RPG Systems</a>
+      <a href="#">Shaders & VFX</a>
+      <a href="#">Game AI</a>
+      <a href="#">Bootcamp</a>
+    </div>
+  </div>
+  <div>
+    <p style="margin-bottom:.8rem; color: var(--text); text-transform:uppercase; letter-spacing:.15em; font-size:.6rem;">Empresa</p>
+    <div class="footer-links">
+      <a href="#">Sobre</a>
+      <a href="#">Instrutores</a>
+      <a href="#">Blog</a>
+      <a href="#">Comunidade</a>
+      <a href="#">Contato</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2025 PIXEL FORGE — TODOS OS DIREITOS RESERVADOS &nbsp;·&nbsp; PROJETO ESCOLAR FICTÍCIO
+  </div>
+</footer>
+
+<script>
+  /* ── CURSOR ─────────────────────────────────────────── */
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = mx + 'px';
+    cur.style.top  = my + 'px';
+  });
+
+  function animRing() {
+    rx += (mx - rx) * .12;
+    ry += (my - ry) * .12;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.background = '#ff4d00';
+      ring.style.borderColor = '#ff4d00';
+      ring.style.transform = 'translate(-50%,-50%) scale(1.6)';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.background = 'var(--neon)';
+      ring.style.borderColor = 'var(--neon)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+    });
+  });
+
+  /* ── COUNTER ANIMATION ──────────────────────────────── */
+  function animateCounter(el, target, suffix = '') {
+    let start = 0;
+    const dur = 1800;
+    const step = timestamp => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(ease * target) + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  /* ── INTERSECTION OBSERVER ──────────────────────────── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+
+      if (el.classList.contains('stat')) {
+        el.classList.add('visible');
+        const num = el.querySelector('.stat-num');
+        const target = parseInt(num.dataset.target);
+        const suffix = num.dataset.target.includes('%') ? '%' : '';
+        animateCounter(num, target, suffix);
+        io.unobserve(el);
+      }
+
+      if (el.classList.contains('course-card') ||
+          el.classList.contains('feat') ||
+          el.classList.contains('track-step')) {
+        setTimeout(() => el.classList.add('visible'),
+          parseInt(el.dataset.delay || 0));
+        io.unobserve(el);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.stat').forEach(el => io.observe(el));
+  document.querySelectorAll('.course-card').forEach((el, i) => {
+    el.dataset.delay = i * 80;
+    io.observe(el);
+  });
+  document.querySelectorAll('.feat').forEach((el, i) => {
+    el.dataset.delay = i * 100;
+    io.observe(el);
+  });
+  document.querySelectorAll('.track-step').forEach((el, i) => {
+    el.dataset.delay = i * 80;
+    io.observe(el);
+  });
+
+  /* ── GLITCH EFFECT ON LOGO HOVER ────────────────────── */
+  const logo = document.querySelector('nav .logo');
+  logo.addEventListener('mouseenter', () => {
+    logo.animate([
+      { transform: 'translate(0,0)', filter: 'none' },
+      { transform: 'translate(-2px, 0)', filter: 'hue-rotate(90deg)' },
+      { transform: 'translate(2px, 0)',  filter: 'hue-rotate(-90deg)' },
+      { transform: 'translate(0,0)',    filter: 'none' },
+    ], { duration: 250, iterations: 2 });
+  });
+</script>
+</body>
+</html>
