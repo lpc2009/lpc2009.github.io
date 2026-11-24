@@ -88,8 +88,10 @@ async function askTutor(message) {
   const value = message.trim();
   if (!value) return;
   if (!AI_API_URL) {
-    addChatMessage("assistant", "O tutor com IA já está preparado no projeto, mas falta conectar o endereço do servidor seguro. A chave da IA nunca será colocada no site público.");
-    $("aiStatus").textContent = "Configuração pendente: endereço do Worker seguro.";
+    addChatMessage("assistant", "Vou abrir uma conversa com o Astro no ChatGPT. Sua pergunta irá junto para você continuar por lá!");
+    $("aiStatus").textContent = "Abrindo o Astro no ChatGPT…";
+    const chatUrl = "https://chatgpt.com/?q=" + encodeURIComponent("Você é o Astro, meu professor particular de TypeScript no TypeLab. Explique de forma simples, passo a passo, considerando que sou iniciante. Minha dúvida é: " + value);
+    window.open(chatUrl, "_blank", "noopener,noreferrer");
     return;
   }
   tutorHistory.push({ role: "user", content: value });
