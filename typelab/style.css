@@ -5,3 +5,15 @@
 .code-review{margin:0 20px 15px;padding:15px;background:#faf8fd;border:1px solid var(--line);border-radius:10px;display:grid;gap:10px}.code-review b{display:block;font-size:11px;color:var(--ink)}.code-review small{display:block;margin-top:5px;color:#9992a4;font-size:10px;line-height:1.5}.code-review textarea{width:100%;min-height:145px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:12px;font:11px/1.6 Consolas,monospace;outline:none;color:var(--ink);background:#fff}.code-review textarea:focus{border-color:#b59bd6}.code-review .secondary-btn{justify-self:start;color:var(--purple);border-color:#dcd0ed}.chat-form button:disabled,.code-review button:disabled{opacity:.55;cursor:wait}.dark .code-review{background:#342e40}.dark .code-review textarea{background:#282333;color:var(--ink);border-color:#51475f}
 
 .progress-share{max-width:850px;display:flex;align-items:center;justify-content:space-between;gap:20px;background:#f0eafa;border:1px solid #e4d9f2;border-radius:13px;padding:18px 20px;margin:0 0 18px}.progress-share b{display:block;font:700 13px Manrope;color:#51318f}.progress-share small{display:block;margin-top:5px;font-size:10px;line-height:1.5;color:#81788e}.progress-share button:disabled{opacity:.7;cursor:default}.dark .progress-share{background:#342b43;border-color:#51475f}.dark .progress-share b{color:#d8c4f4}@media(max-width:720px){.progress-share{align-items:stretch;flex-direction:column}.progress-share button{width:100%}}
+
+/* Realce de sintaxe inspirado no tema Dark+ do VS Code */
+.code-box,.lab-panel textarea,.lab-result pre{background:#1e1e1e!important;color:#d4d4d4!important}
+pre.code-box[class*="language-"]{text-shadow:none!important}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#6a9955!important}
+.token.punctuation{color:#d4d4d4!important}
+.token.property,.token.tag,.token.boolean,.token.number,.token.constant,.token.symbol{color:#b5cea8!important}
+.token.selector,.token.attr-name,.token.string,.token.char,.token.builtin{color:#ce9178!important}
+.token.operator,.token.entity,.token.url{color:#d4d4d4!important}
+.token.atrule,.token.keyword{color:#569cd6!important}
+.token.function,.token.class-name{color:#dcdcaa!important}
+.token.regex,.token.important,.token.variable{color:#d16969!important}
