@@ -82,19 +82,14 @@ function shareProgressWithAstro(){
     "Questões respondidas: "+answered+"; acertos: "+correctAnswers+"; erros: "+wrongAnswers+".",
     "Módulos com aulas concluídas: "+(moduleCounts.map(m=>m.name+" ("+m.done+"/"+m.total+")").join("; ")||"nenhum ainda")+".",
     "Próxima aula sugerida: "+(next?next.module.title+" — "+next.title:"trilha concluída")+".",
-    "Aulas concluídas:
-"+(doneNames.join("
-")||"Ainda não concluí nenhuma aula."),
+    "Aulas concluídas:\n"+(doneNames.join("\n")||"Ainda não concluí nenhuma aula."),
     "Com base nesses dados, reconheça meu progresso e sugira exatamente o próximo passo de estudo. Se houver poucos dados, comece pela próxima aula."
-  ].join("
-
-");
+  ].join("\n\n");
   const url="https://chatgpt.com/?q="+encodeURIComponent(summary);
   window.open(url,"_blank","noopener,noreferrer");
   $("shareProgress").textContent="Progresso compartilhado ✓";
   $("shareProgress").disabled=true;
 }
-
 function renderModules(){ $("moduleList").innerHTML=modules.map((m,i)=>'<article class="module-card '+(i===0?"open":"")+'"><div class="module-head" data-module="'+i+'"><span class="module-icon">'+m.icon+'</span><div><b>'+String(i+1).padStart(2,"0")+'. '+m.title+'</b><small>'+m.desc+' · '+m.lessons.length+' aulas</small></div><span class="chevron">⌄</span></div><div class="module-lessons">'+m.lessons.map((l,j)=>{let id=i+"-"+j,done=completed.includes(id);return '<button class="lesson-row '+(done?"done":"")+'" data-lesson="'+id+'"><span class="check">'+(done?"✓":"")+'</span><div><b>'+l[0]+'</b><small>'+l[1]+'</small></div><span class="row-arrow">→</span></button>'}).join("")+'</div></article>').join("");document.querySelectorAll(".module-head").forEach(h=>h.onclick=()=>h.parentElement.classList.toggle("open"));document.querySelectorAll(".lesson-row").forEach(b=>b.onclick=()=>openLesson(b.dataset.lesson))}
 function renderHomeModules(){$("homeModules").innerHTML=modules.slice(0,6).map((m,i)=>'<button class="path-card" data-module-go="'+i+'"><span class="path-icon">'+m.icon+'</span><b>'+m.title+'</b><small>'+m.lessons.length+' aulas · '+m.desc+'</small></button>').join("");document.querySelectorAll("[data-module-go]").forEach(b=>{b.onclick=()=>{showView("course");document.querySelectorAll(".module-card")[Number(b.dataset.moduleGo)]?.classList.add("open")}})}
 function openLesson(id){let l=allLessons.find(x=>x.id===id)||allLessons[0];currentLesson=allLessons.indexOf(l);$("lessonKicker").textContent="MÓDULO "+String(l.mi+1).padStart(2,"0")+" · "+l.module.title.toUpperCase();$("lessonTitle").textContent=l.title;$("lessonTime").textContent="◷ "+l.time;$("lessonBody").innerHTML=l.body+'<h2>Confira o que aprendeu</h2><p>Responda à questão relacionada ao conteúdo para reforçar o aprendizado.</p><div class="practice-panel" id="lessonQuestion"></div>';$("lessonQuestion").innerHTML='<p class="question-text">'+questions[currentLesson%questions.length].q+'</p><div class="answers">'+questions[currentLesson%questions.length].a.map((a,i)=>'<button class="answer" data-a="'+i+'">'+a+'</button>').join("")+'</div><div class="feedback" id="lessonFeedback"></div>';$("lessonQuestion").querySelectorAll(".answer").forEach(b=>b.onclick=()=>{if(b.dataset.done)return;let q=questions[currentLesson%questions.length],ok=Number(b.dataset.a)===q.c;$("lessonQuestion").querySelectorAll(".answer").forEach(x=>{x.dataset.done="1";x.disabled=true;if(Number(x.dataset.a)===q.c)x.classList.add("correct")});answered++;if(ok){correctAnswers++;xp+=5}else{wrongAnswers++}b.classList.add(ok?"correct":"wrong");$("lessonFeedback").className="feedback show";$("lessonFeedback").style.background=ok?"#edf8f1":"#fff0ef";$("lessonFeedback").textContent=(ok?"Muito bem! ":"Quase! ")+q.e;save()});$("finishLesson").textContent=completed.includes(l.id)?"Aula concluída ✓":"Concluir aula ✓";$("prevLesson").disabled=currentLesson===0;$("nextLesson").disabled=currentLesson===allLessons.length-1;showView("lesson")}
