@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6d42b5">
+<meta name="description" content="Aprenda TypeScript do zero com aulas, exemplos e exercícios práticos.">
+<title>TypeLab — Aprenda TypeScript</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <a class="brand" href="#"><span class="brand-mark">T</span><span>type<span class="brand-light">lab</span><small>ACADEMIA DE TYPESCRIPT</small></span></a>
+  <div class="side-label">APRENDIZADO</div>
+  <button class="nav active" data-view="home"><span>⌂</span> Visão geral</button>
+  <button class="nav" data-view="course"><span>▤</span> Trilha de estudos</button>
+  <button class="nav" data-view="practice"><span>⌘</span> Praticar</button>
+  <button class="nav" data-view="progress"><span>↗</span> Meu progresso</button>
+  <div class="side-label second">RECURSOS</div>
+  <button class="nav" data-view="tutor"><span>✳</span> Tutor de estudos</button>
+  <div class="sidebar-bottom"><div class="mini-progress"><div class="mini-top"><span>Seu progresso</span><b id="sidePercent">0%</b></div><div class="progress-track"><i id="sideBar"></i></div><small id="sideDone">0 de 24 aulas concluídas</small></div><div class="profile"><div class="avatar">L</div><div><b>Estudante</b><small>Aprendiz de TypeScript</small></div></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><button class="mobile-menu" id="menuBtn">☰</button><div class="crumb">Sua jornada <span>/</span> <b id="crumbName">Visão geral</b></div><div class="top-actions"><span class="streak">♨ <b id="streak">1</b> dia</span><button class="theme-btn" id="themeBtn" title="Alternar tema">◐</button></div></header>
+<section class="view active" id="view-home">
+  <div class="welcome"><div><div class="eyebrow">SEU ESPAÇO DE APRENDIZADO</div><h1>Vamos transformar<br>curiosidade em <em>código.</em></h1><p>Aprenda TypeScript no seu ritmo, uma ideia de cada vez.</p></div><div class="welcome-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="ts-logo">TS</div><span class="spark s1">✦</span><span class="spark s2">✧</span></div></div>
+  <div class="stats"><article><span class="stat-icon lilac">▤</span><div><small>Aulas concluídas</small><strong id="statLessons">0 <i>/ 24</i></strong></div></article><article><span class="stat-icon peach">◈</span><div><small>XP conquistados</small><strong id="statXP">0 XP</strong></div></article><article><span class="stat-icon mint">◷</span><div><small>Tempo de estudo</small><strong id="statTime">0 min</strong></div></article></div>
+  <div class="section-heading"><div><div class="eyebrow">CONTINUE DE ONDE PAROU</div><h2>Sua próxima aula</h2></div><button class="text-btn" data-go="course">Ver trilha completa ↗</button></div>
+  <article class="continue-card"><div class="lesson-number">01 <span>·</span> FUNDAMENTOS</div><div class="continue-content"><h3>O que é TypeScript?</h3><p>Entenda por que TypeScript existe e como ele ajuda a escrever JavaScript com mais segurança.</p><div class="lesson-meta"><span>◷ 8 min</span><span>▤ Iniciante</span></div></div><button class="primary-btn" id="continueBtn">Começar aula <span>→</span></button></article>
+  <div class="section-heading"><div><div class="eyebrow">O CAMINHO</div><h2>Aprenda por etapas</h2></div></div>
+  <div class="path-grid" id="homeModules"></div>
+</section>
+<section class="view" id="view-course"><div class="page-heading"><div class="eyebrow">PLANO DE ESTUDOS</div><h1>Sua trilha de <em>TypeScript</em></h1><p>Do primeiro tipo até recursos avançados. Siga na ordem ou explore o que despertar sua curiosidade.</p></div><div id="moduleList" class="module-list"></div></section>
+<section class="view" id="view-lesson"><button class="back-link" data-go="course">← Voltar para a trilha</button><div class="lesson-layout"><article class="lesson-main"><div class="eyebrow" id="lessonKicker"></div><h1 id="lessonTitle"></h1><div class="lesson-meta"><span id="lessonTime">◷ 8 min</span><span>▤ Aula guiada</span></div><div id="lessonBody" class="lesson-body"></div><div class="lesson-footer"><button class="secondary-btn" id="prevLesson">← Anterior</button><button class="primary-btn" id="finishLesson">Concluir aula <span>✓</span></button><button class="secondary-btn" id="nextLesson">Próxima →</button></div></article><aside class="lesson-aside"><b>Nesta aula</b><p>Leia com calma, teste os exemplos e faça o exercício ao final.</p><div class="aside-note"><span>✳</span><b>Dica de estudo</b><p>Não tente decorar tudo. Entenda o motivo de cada tipo e pratique com exemplos pequenos.</p></div></aside></div></section>
+<section class="view" id="view-practice"><div class="page-heading"><div class="eyebrow">FIXE O CONHECIMENTO</div><h1>Hora de <em>praticar.</em></h1><p>Questões rápidas para conferir se os conceitos ficaram claros.</p></div><div class="practice-panel" id="practicePanel"></div></section>
+<section class="view" id="view-progress"><div class="page-heading"><div class="eyebrow">SEU DESENVOLVIMENTO</div><h1>Pequenos passos,<br><em>grandes avanços.</em></h1><p>Seu histórico de aprendizado fica salvo neste navegador.</p></div><div class="progress-overview"><div class="big-progress"><div class="progress-ring" id="progressRing"><span id="progressNumber">0%</span></div><b>Trilha concluída</b><small id="progressLabel">0 de 24 aulas</small></div><div class="progress-details"><div><small>XP acumulados</small><strong id="progressXP">0</strong></div><div><small>Aulas finalizadas</small><strong id="progressLessons">0</strong></div><div><small>Questões respondidas</small><strong id="progressQuestions">0</strong></div></div></div><h2 class="subheading">Conquistas</h2><div class="badges" id="badges"></div></section>
+<section class="view" id="view-tutor"><div class="page-heading"><div class="eyebrow">APOIO AO APRENDIZADO</div><h1>Seu espaço para <em>perguntar.</em></h1><p>Consulte explicações rápidas e exemplos sobre os assuntos do curso.</p></div><div class="tutor-box"><div class="tutor-head"><div class="tutor-avatar">✳</div><div><b>Assistente TypeLab</b><small>Ajuda de estudos · respostas locais</small></div><span class="online-dot"></span></div><div class="chat-messages" id="chatMessages"><div class="message bot">Oi! 👋 Sou seu apoio de estudos. Pergunte sobre tipos, funções, interfaces, generics ou qualquer assunto da trilha. Também posso explicar um exemplo passo a passo.</div></div><div class="suggestions"><button>O que é uma interface?</button><button>Qual a diferença entre any e unknown?</button><button>Explique generics</button></div><form id="chatForm" class="chat-form"><input id="chatInput" placeholder="Escreva sua dúvida..." autocomplete="off"><button class="primary-btn">Enviar ↑</button></form><small class="local-note">Esta versão responde com uma base de explicações integrada. Correção generativa de código por IA exige conectar um serviço de IA com chave privada em um backend.</small></div></section>
+<footer>TYPELAB <span>·</span> Aprender é construir, uma linha por vez.</footer>
+</main></div>
+<script src="app.js"></script>
+</body></html>
