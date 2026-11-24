@@ -73,8 +73,72 @@ $("finishLesson").onclick=()=>{let l=allLessons[currentLesson];if(!completed.inc
 $("prevLesson").onclick=()=>{if(currentLesson>0)openLesson(allLessons[currentLesson-1].id)};$("nextLesson").onclick=()=>{if(currentLesson<allLessons.length-1)openLesson(allLessons[currentLesson+1].id)};
 function renderPractice(){qIndex=0;score=0;questionLocked=false;showQuestion()}
 function showQuestion(){let q=questions[qIndex%questions.length];$("practicePanel").innerHTML='<div class="question-count">QUESTÃO '+(qIndex+1)+' DE '+questions.length+'</div><div class="progress-track"><i style="width:'+((qIndex)/questions.length*100)+'%"></i></div><h2 class="question-text">'+q.q+'</h2><div class="answers">'+q.a.map((a,i)=>'<button class="answer" data-answer="'+i+'">'+String.fromCharCode(65+i)+'. '+a+'</button>').join("")+'</div><div class="feedback" id="practiceFeedback"></div><div style="display:flex;justify-content:flex-end;margin-top:18px"><button class="primary-btn" id="nextQuestion" disabled>Próxima questão →</button></div>';$("practicePanel").querySelectorAll(".answer").forEach(b=>b.onclick=()=>{if(questionLocked)return;questionLocked=true;answered++;let ok=Number(b.dataset.answer)===q.c;if(ok){score++;xp+=10}save();$("practicePanel").querySelectorAll(".answer").forEach((x,i)=>{x.disabled=true;if(i===q.c)x.classList.add("correct")});if(!ok)b.classList.add("wrong");$("practiceFeedback").className="feedback show";$("practiceFeedback").style.background=ok?"#edf8f1":"#fff0ef";$("practiceFeedback").textContent=(ok?"Resposta correta! ":"Não foi dessa vez. ")+q.e;$("nextQuestion").disabled=false});$("nextQuestion").onclick=()=>{if(qIndex<questions.length-1){qIndex++;showQuestion()}else{$("practicePanel").innerHTML='<div class="eyebrow">SESSÃO FINALIZADA</div><h2 class="question-text">Você terminou esta rodada!</h2><p>Você acertou '+score+' de '+questions.length+' questões nesta sessão e acumulou '+(score*10)+' XP.</p><button class="primary-btn" id="again">Praticar novamente →</button>';$("again").onclick=renderPractice}}}
-function tutorReply(text){let t=text.toLowerCase();let found;if(t.includes("interface"))found="Uma interface descreve o formato de um objeto. Exemplo:\n\ninterface Aluno { nome: string; idade: number }\n\nDepois, um objeto que usa Aluno precisa ter essas propriedades com os tipos indicados. Interfaces também podem ser estendidas com extends.";else if(t.includes("any")||t.includes("unknown"))found="any aceita qualquer valor e praticamente desliga a checagem para ele. unknown também aceita qualquer valor, mas você precisa verificar o tipo antes de usar. Exemplo:\n\nlet dado: unknown = 'oi';\nif (typeof dado === 'string') { console.log(dado.toUpperCase()); }\n\nEm geral, prefira unknown quando o valor ainda não é conhecido.";else if(t.includes("generic"))found="Generics são parâmetros de tipo. Eles permitem reaproveitar uma função mantendo o tipo do valor. Exemplo:\n\nfunction guardar<T>(valor: T): T { return valor; }\n\nT representa o tipo que será definido quando a função for chamada. Se enviar um número, o retorno será number; se enviar texto, será string.";else if(t.includes("array")||t.includes("lista"))found="Para criar um array de textos, use string[]. Para números, number[]. Exemplo:\n\nlet nomes: string[] = ['Ana', 'Bia'];\nnomes.push('Caio');\n\nO TypeScript impede que você coloque um valor de outro tipo nessa lista.";else if(t.includes("função")||t.includes("funcao"))found="Você pode definir o tipo dos parâmetros e do retorno:\n\nfunction somar(a: number, b: number): number { return a + b; }\n\nOs dois parâmetros precisam ser números e o resultado também será number.";else if(t.includes("union")||t.includes("união")||t.includes("uniao"))found="Uma união permite mais de um tipo possível. Exemplo: let codigo: string | number. O valor pode ser texto ou número. Antes de usar algo específico de um tipo, faça uma verificação como typeof codigo === 'string'.";else if(t.includes("type")||t.includes("tipo"))found="Os tipos básicos são string (texto), number (número) e boolean (true ou false). Você pode declarar assim: let nome: string = 'Lia';. O TypeScript também consegue inferir o tipo quando você já atribui um valor.";else found="Posso ajudar com os conceitos principais da trilha: tipos básicos, arrays, objetos, interfaces, funções, unions, narrowing, generics, classes, módulos e utility types. Tente perguntar por um desses assuntos ou escreva um pequeno exemplo para eu explicar a estrutura.";return found}
-$("chatForm").onsubmit=e=>{e.preventDefault();let value=$("chatInput").value.trim();if(!value)return;let u=document.createElement("div");u.className="message user";u.textContent=value;$("chatMessages").appendChild(u);let b=document.createElement("div");b.className="message bot";b.textContent=tutorReply(value);$("chatMessages").appendChild(b);$("chatInput").value="";$("chatMessages").scrollTop=$("chatMessages").scrollHeight};
+// Assistente generativo: a chave da API fica somente no Worker, nunca neste arquivo.
+const AI_API_URL = "";
+const tutorHistory = [];
+function addChatMessage(role, text) {
+  const item = document.createElement("div");
+  item.className = "message " + (role === "assistant" ? "bot" : "user");
+  item.textContent = text;
+  $("chatMessages").appendChild(item);
+  $("chatMessages").scrollTop = $("chatMessages").scrollHeight;
+}
+async function askTutor(message) {
+  const value = message.trim();
+  if (!value) return;
+  if (!AI_API_URL) {
+    addChatMessage("assistant", "O tutor com IA já está preparado no projeto, mas falta conectar o endereço do servidor seguro. A chave da IA nunca será colocada no site público.");
+    $("aiStatus").textContent = "Configuração pendente: endereço do Worker seguro.";
+    return;
+  }
+  tutorHistory.push({ role: "user", content: value });
+  const send = $("sendChat");
+  const review = $("reviewCode");
+  if (send) send.disabled = true;
+  if (review) review.disabled = true;
+  addChatMessage("user", value);
+  const loading = document.createElement("div");
+  loading.className = "message bot";
+  loading.textContent = "Pensando na sua dúvida...";
+  $("chatMessages").appendChild(loading);
+  $("chatMessages").scrollTop = $("chatMessages").scrollHeight;
+  try {
+    const response = await fetch(AI_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: tutorHistory.slice(-12) })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Não foi possível obter uma resposta.");
+    loading.textContent = data.answer;
+    tutorHistory.push({ role: "assistant", content: data.answer });
+    $("aiStatus").textContent = "Assistente de IA conectado · respostas geradas em tempo real.";
+  } catch (error) {
+    loading.textContent = error.message || "Não consegui conectar ao tutor. Tente novamente.";
+    tutorHistory.pop();
+  } finally {
+    if (send) send.disabled = false;
+    if (review) review.disabled = false;
+    $("chatMessages").scrollTop = $("chatMessages").scrollHeight;
+  }
+}
+$("chatForm").onsubmit = event => {
+  event.preventDefault();
+  const input = $("chatInput");
+  const value = input.value.trim();
+  if (!value) return;
+  input.value = "";
+  askTutor(value);
+};
+$("reviewCode").onclick = () => {
+  const code = $("codeQuestion").value.trim();
+  if (!code) {
+    $("codeQuestion").focus();
+    $("aiStatus").textContent = "Cole seu código TypeScript antes de pedir a correção.";
+    return;
+  }
+  askTutor("Analise e corrija este código TypeScript. Explique os erros, por que acontecem e apresente o código corrigido completo:\n\n\`\`\`typescript\n" + code + "\n\`\`\`");
+};
 document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{showView(b.dataset.view);if(b.dataset.view==="practice")renderPractice()});document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>showView(b.dataset.go));$("continueBtn").onclick=()=>openLesson(allLessons.find(l=>!completed.includes(l.id))?.id||allLessons[0].id);$("menuBtn").onclick=()=>$("sidebar").classList.toggle("show");$("themeBtn").onclick=()=>document.body.classList.toggle("dark");document.querySelectorAll(".suggestions button").forEach(b=>b.onclick=()=>{$("chatInput").value=b.textContent;$("chatForm").requestSubmit()});
 renderModules();renderHomeModules();updateProgress();
 // Laboratório: usa o compilador TypeScript no próprio navegador.
