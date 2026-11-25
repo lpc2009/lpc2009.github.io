@@ -44,10 +44,10 @@ const modules = [
 ]}
 {title:"TypeScript Advanced",icon:"✧",desc:"Explore recursos avançados e práticas usadas em projetos reais.",lessons:[
 ["Definitely Typed","10 min",`<p>Algumas bibliotecas JavaScript não foram escritas em TypeScript. Mesmo assim, podemos usar tipos para trabalhar com elas.</p><p>O projeto <strong>Definitely Typed</strong> reúne definições de tipos mantidas pela comunidade. Muitas ficam disponíveis pelo pacote <code>@types</code>.</p><pre class="code-box">npm install --save-dev @types/lodash</pre><p>Depois de instalar os tipos correspondentes, o editor pode oferecer sugestões e verificar o uso da biblioteca.</p><div class="callout"><strong>Atenção:</strong> nem toda biblioteca precisa de um pacote <code>@types</code>. Algumas já incluem suas próprias definições.</div>`],
-["Atualizações do TypeScript 5","11 min",`<p>O TypeScript recebe atualizações que melhoram a linguagem e as ferramentas. A série 5 trouxe recursos e ajustes importantes.</p><h2>Exemplo: tipos de template string</h2><pre class="code-box">type Saudacao = `Olá, ${string}`;
+["Atualizações do TypeScript 5","11 min",`<p>O TypeScript recebe atualizações que melhoram a linguagem e as ferramentas. A série 5 trouxe recursos e ajustes importantes.</p><h2>Exemplo: tipos de template string</h2><pre class="code-box">type Saudacao = \`Olá, \${string}\`;
 
 let mensagem: Saudacao = "Olá, Ana";</pre><p>Esse tipo aceita textos que começam com <code>Olá, </code>.</p><h2>Chaves dinâmicas</h2><pre class="code-box">type Dados = {
-  [chave: `item_${string}`]: string;
+  [chave: \`item_\${string}\`]: string;
 };</pre><p>Esse formato permite propriedades cujos nomes seguem um padrão. Os recursos disponíveis dependem da versão do TypeScript usada no projeto.</p>`],
 ["Configuração do TypeScript","11 min",`<p>O arquivo <code>tsconfig.json</code> define como o compilador deve analisar o projeto.</p><pre class="code-box">{
   "compilerOptions": {
