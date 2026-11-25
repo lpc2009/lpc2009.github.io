@@ -17,3 +17,7 @@ pre.code-box[class*="language-"]{text-shadow:none!important}
 .token.atrule,.token.keyword{color:#569cd6!important}
 .token.function,.token.class-name{color:#dcdcaa!important}
 .token.regex,.token.important,.token.variable{color:#d16969!important}
+
+/* Negrito tradicional para destacar conceitos nas aulas */
+.lesson-body strong{font-weight:700!important;color:inherit}
+.lesson-body strong code{font-weight:700!important}
