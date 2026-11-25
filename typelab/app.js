@@ -42,6 +42,143 @@ const modules = [
 ["DOM e eventos","12 min",`<p>TypeScript também pode ajudar ao trabalhar com elementos HTML. O método <code>getElementById</code> pode retornar <code>null</code>, então precisamos conferir o resultado.</p><pre class="code-box">const botao = document.getElementById("salvar");\nif (botao) {\n  botao.addEventListener("click", () => {\n    console.log("Salvo!");\n  });\n}</pre><p>Para acessar propriedades específicas de um input, faça uma verificação de tipo ou use uma conversão quando tiver certeza do elemento.</p>`],
 ["tsconfig e modo strict","13 min",`<p>O arquivo <code>tsconfig.json</code> configura como o compilador analisa e gera seu projeto.</p><pre class="code-box">{\n  "compilerOptions": {\n    "target": "ES2020",\n    "module": "ESNext",\n    "strict": true,\n    "outDir": "./dist"\n  }\n}</pre><p><code>strict</code> ativa um conjunto de verificações mais rigorosas. Isso pode revelar erros que estavam escondidos, mas ajuda a manter o código mais confiável.</p><h2>Próximos passos</h2><p>Depois de dominar esses conceitos, pratique com projetos reais, testes, bibliotecas e leitura da documentação oficial. A melhor forma de aprender é aplicar os tipos em situações concretas.</p>`]
 ]}
+{title:"TypeScript Advanced",icon:"✧",desc:"Explore recursos avançados e práticas usadas em projetos reais.",lessons:[
+["Definitely Typed","10 min",`<p>Algumas bibliotecas JavaScript não foram escritas em TypeScript. Mesmo assim, podemos usar tipos para trabalhar com elas.</p><p>O projeto <strong>Definitely Typed</strong> reúne definições de tipos mantidas pela comunidade. Muitas ficam disponíveis pelo pacote <code>@types</code>.</p><pre class="code-box">npm install --save-dev @types/lodash</pre><p>Depois de instalar os tipos correspondentes, o editor pode oferecer sugestões e verificar o uso da biblioteca.</p><div class="callout"><strong>Atenção:</strong> nem toda biblioteca precisa de um pacote <code>@types</code>. Algumas já incluem suas próprias definições.</div>`],
+["Atualizações do TypeScript 5","11 min",`<p>O TypeScript recebe atualizações que melhoram a linguagem e as ferramentas. A série 5 trouxe recursos e ajustes importantes.</p><h2>Exemplo: tipos de template string</h2><pre class="code-box">type Saudacao = `Olá, ${string}`;
+
+let mensagem: Saudacao = "Olá, Ana";</pre><p>Esse tipo aceita textos que começam com <code>Olá, </code>.</p><h2>Chaves dinâmicas</h2><pre class="code-box">type Dados = {
+  [chave: `item_${string}`]: string;
+};</pre><p>Esse formato permite propriedades cujos nomes seguem um padrão. Os recursos disponíveis dependem da versão do TypeScript usada no projeto.</p>`],
+["Configuração do TypeScript","11 min",`<p>O arquivo <code>tsconfig.json</code> define como o compilador deve analisar o projeto.</p><pre class="code-box">{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}</pre><p><code>target</code> define a versão de JavaScript gerada; <code>module</code> configura o formato dos módulos; <code>strict</code> ativa verificações mais rigorosas; <code>outDir</code> indica a pasta de saída.</p><p>Você pode criar uma configuração inicial com <code>tsc --init</code>.</p>`],
+["TypeScript com Node.js","10 min",`<p><strong>Node.js</strong> permite executar JavaScript fora do navegador. Com TypeScript, normalmente escrevemos arquivos <code>.ts</code> e usamos uma ferramenta para executá-los ou compilá-los.</p><pre class="code-box">function somar(a: number, b: number): number {
+  return a + b;
+}
+
+console.log(somar(5, 3));</pre><p>Em um projeto, instale o TypeScript e configure o <code>tsconfig.json</code>. O comando <code>tsc</code> compila os arquivos para JavaScript.</p><div class="callout">A forma de executar TypeScript diretamente depende da versão do Node.js e das ferramentas configuradas no projeto.</div>`],
+["TypeScript com React","11 min",`<p><strong>React</strong> é uma biblioteca usada para criar interfaces. Com TypeScript, podemos definir os tipos das propriedades recebidas por um componente.</p><pre class="code-box">type SaudacaoProps = {
+  nome: string;
+};
+
+function Saudacao({ nome }: SaudacaoProps) {
+  return <h1>Olá, {nome}!</h1>;
+}</pre><p><code>SaudacaoProps</code> descreve as propriedades do componente. Assim, o TypeScript avisa se esquecermos <code>nome</code> ou enviarmos um valor de tipo incorreto.</p><p>Em projetos React com TypeScript, arquivos com JSX normalmente usam a extensão <code>.tsx</code>.</p>`],
+["Ferramentas de desenvolvimento","9 min",`<p>Ferramentas ajudam a escrever, verificar e organizar projetos TypeScript.</p><ul><li><strong>Visual Studio Code:</strong> oferece sugestões e mostra erros enquanto você escreve.</li><li><strong>Compilador tsc:</strong> verifica os tipos e gera JavaScript.</li><li><strong>ESLint:</strong> ajuda a encontrar problemas e manter padrões no código.</li><li><strong>Formatadores:</strong> organizam a aparência do código.</li></ul><pre class="code-box">tsc --noEmit</pre><p>Esse comando verifica o projeto sem gerar arquivos JavaScript.</p>`],
+["Tipos avançados","12 min",`<p>Tipos avançados ajudam a representar estruturas mais específicas. Eles combinam recursos que você já conhece, como <code>keyof</code>, uniões e generics.</p><h2>Exemplo: tipo baseado em outro</h2><pre class="code-box">type Usuario = {
+  nome: string;
+  idade: number;
+};
+
+type ChavesUsuario = keyof Usuario;
+// "nome" | "idade"</pre><p>Entre os recursos avançados estão <strong>mapped types</strong>, <strong>conditional types</strong>, <strong>template literal types</strong> e tipos recursivos.</p><div class="callout">Esses recursos são poderosos, mas use-os aos poucos. Um tipo fácil de entender costuma ser melhor do que um tipo muito complexo.</div>`],
+["Type Guards","11 min",`<p><strong>Type Guards</strong> são verificações que ajudam o TypeScript a descobrir qual tipo de valor está sendo usado.</p><pre class="code-box">function mostrar(valor: string | number) {
+  if (typeof valor === "string") {
+    console.log(valor.toUpperCase());
+  } else {
+    console.log(valor.toFixed(2));
+  }
+}</pre><p>Dentro do <code>if</code>, o TypeScript sabe que <code>valor</code> é texto. No <code>else</code>, sabe que é número.</p><p>Também podemos usar <code>in</code>, <code>instanceof</code> e funções de validação próprias.</p>`],
+["Conditional Types","12 min",`<p><strong>Conditional Types</strong> permitem escolher um tipo com base em uma condição. A estrutura usa <code>extends</code>, <code>?</code> e <code>:</code>.</p><pre class="code-box">type EhTexto<T> = T extends string ? true : false;
+
+type A = EhTexto<string>; // true
+type B = EhTexto<number>; // false</pre><p>Leia como: se <code>T</code> puder ser atribuído a <code>string</code>, o resultado será <code>true</code>; caso contrário, será <code>false</code>.</p><p>Esse recurso aparece bastante em bibliotecas e tipos genéricos mais avançados.</p>`],
+["Mapped Types","12 min",`<p><strong>Mapped Types</strong> criam um novo tipo percorrendo as propriedades de outro tipo.</p><pre class="code-box">type Usuario = {
+  nome: string;
+  idade: number;
+};
+
+type Opcoes<T> = {
+  [K in keyof T]: boolean;
+};
+
+type UsuarioOpcoes = Opcoes<Usuario>;</pre><p>O resultado terá as propriedades <code>nome</code> e <code>idade</code>, mas ambas terão o tipo <code>boolean</code>.</p><p>Esse recurso é usado por tipos utilitários como <code>Partial</code> e <code>Readonly</code>.</p>`],
+["Inferência de tipos","10 min",`<p><strong>Inferência</strong> é quando o TypeScript descobre o tipo sem que precisemos escrevê-lo.</p><pre class="code-box">let nome = "Lívia";
+let idade = 17;
+
+// nome: string
+// idade: number</pre><p>O TypeScript usa o valor inicial e o contexto para descobrir os tipos.</p><p>Em tipos condicionais, a palavra <code>infer</code> permite descobrir uma parte de outro tipo.</p><pre class="code-box">type Retorno<T> = T extends () => infer R ? R : never;</n
+type Resultado = Retorno<() => number>; // number</pre>`],
+["Literal Types","10 min",`<p><strong>Literal Types</strong> permitem aceitar valores específicos, em vez de qualquer texto ou número.</p><pre class="code-box">let direcao: "esquerda" | "direita";
+
+direcao = "esquerda";
+// direcao = "cima"; // Erro</pre><p>A variável só pode receber um dos textos indicados.</p><p>Isso é útil para estados, opções de configuração e valores que precisam seguir uma lista definida.</p>`],
+["Namespaces","10 min",`<p><strong>Namespaces</strong> agrupam tipos e valores relacionados sob um mesmo nome, ajudando a evitar conflitos de nomes.</p><pre class="code-box">namespace Calculadora {
+  export function somar(a: number, b: number): number {
+    return a + b;
+  }
+}
+
+Calculadora.somar(2, 3);</pre><p>A palavra <code>export</code> permite acessar a função fora do namespace.</p><div class="callout">Em projetos modernos, módulos com <code>import</code> e <code>export</code> costumam ser a opção mais comum para organizar arquivos.</div>`],
+["Index Signatures","10 min",`<p><strong>Index Signatures</strong> descrevem objetos que podem ter várias propriedades com nomes dinâmicos.</p><pre class="code-box">type Notas = {
+  [materia: string]: number;
+};
+
+const notas: Notas = {
+  matematica: 9,
+  historia: 8
+};</pre><p>O exemplo permite nomes de matérias como chaves e exige que os valores sejam números.</p><p>Também é possível restringir os nomes das propriedades usando tipos de template string.</p>`],
+["Declaration Merging","11 min",`<p><strong>Declaration Merging</strong> acontece quando o TypeScript combina declarações com o mesmo nome em situações permitidas.</p><pre class="code-box">interface Usuario {
+  nome: string;
+}
+
+interface Usuario {
+  idade: number;
+}
+
+const aluno: Usuario = {
+  nome: "Ana",
+  idade: 17
+};</pre><p>As duas interfaces são combinadas. Por isso, o objeto precisa ter as propriedades declaradas nas duas partes.</p><div class="callout">Esse comportamento é comum em definições de tipos que podem ser ampliadas por bibliotecas.</div>`],
+["Programação assíncrona","11 min",`<p>Uma operação assíncrona pode levar algum tempo, como buscar dados de uma API. <strong>Promise</strong> representa um resultado que ficará disponível depois.</p><pre class="code-box">async function buscarNome(): Promise<string> {
+  return "Ana";
+}
+
+async function iniciar(): Promise<void> {
+  const nome = await buscarNome();
+  console.log(nome);
+}</pre><p><code>async</code> indica uma função assíncrona e <code>await</code> espera o resultado de uma Promise dentro dela.</p><p>Use <code>try</code> e <code>catch</code> para tratar possíveis falhas.</p>`],
+["Decorators","12 min",`<p><strong>Decorators</strong> são recursos que permitem adicionar comportamento ou metadados a classes e a alguns de seus membros.</p><p>Nas versões atuais do TypeScript, existe suporte à sintaxe moderna de decorators, com regras próprias.</p><pre class="code-box">function Registrar(valor: Function, contexto: ClassDecoratorContext) {
+  console.log("Classe registrada:", contexto.name);
+}
+
+@Registrar
+class Produto {
+}</pre><p>Decorators são um assunto mais avançado e sua configuração depende do padrão usado pelo projeto e da versão do TypeScript.</p>`],
+["TypeScript em projetos JavaScript","10 min",`<p>É possível começar a usar verificações do TypeScript em um projeto que ainda possui arquivos JavaScript.</p><p>Uma forma simples é adicionar <code>// @ts-check</code> no início do arquivo.</p><pre class="code-box">// @ts-check
+
+/** @type {string} */
+let nome = "Ana";
+
+nome = 10; // O editor pode avisar sobre o tipo</pre><p>Comentários JSDoc, como <code>@type</code>, ajudam a informar tipos sem mudar imediatamente a extensão do arquivo.</p>`],
+["Migração para TypeScript","10 min",`<p><strong>Migração</strong> é o processo de passar um projeto JavaScript para TypeScript.</p><p>Em projetos existentes, é possível fazer isso aos poucos: configure o projeto, habilite a verificação de JavaScript e migre um arquivo por vez.</p><pre class="code-box">{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true
+  }
+}</pre><p>Comece por arquivos menores e corrija os avisos antes de avançar. Em projetos grandes, uma migração gradual costuma ser mais segura.</p>`],
+["Tratamento de erros","10 min",`<p>Erros podem acontecer durante a execução, por exemplo quando uma busca falha ou um dado não existe. O TypeScript ajuda a representar e tratar essas situações.</p><pre class="code-box">function dividir(a: number, b: number): number {
+  if (b === 0) {
+    throw new Error("Não é possível dividir por zero");
+  }
+  return a / b;
+}
+
+try {
+  console.log(dividir(10, 0));
+} catch (erro) {
+  console.log("Ocorreu um erro");
+}</pre><p>Em um bloco <code>catch</code>, trate o erro com cuidado. Com as configurações atuais, o valor capturado pode ser considerado <code>unknown</code>.</p>`],
+["Boas práticas","10 min",`<p>Boas práticas deixam o código mais fácil de entender, testar e manter.</p><ul><li>Ative <code>strict</code> quando possível.</li><li>Prefira tipos específicos em vez de <code>any</code>.</li><li>Use nomes claros para variáveis, funções e tipos.</li><li>Divida o código em arquivos e funções menores.</li><li>Evite criar tipos avançados sem necessidade.</li><li>Trate valores que podem ser <code>null</code> ou <code>undefined</code>.</li><li>Teste o comportamento do programa, além de verificar os tipos.</li></ul><div class="callout"><strong>Regra principal:</strong> escreva código que seja seguro, mas também simples de ler. TypeScript é uma ferramenta para ajudar, não para complicar.</div>`]
+]}
 ];
 const questions = [
 {q:"Qual é a principal vantagem do TypeScript?",a:["Executar sem JavaScript","Adicionar verificação de tipos ao JavaScript","Substituir o HTML","Criar bancos de dados"],c:1,e:"TypeScript adiciona um sistema de tipos e ferramentas de análise ao JavaScript."},
